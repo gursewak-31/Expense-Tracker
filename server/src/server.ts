@@ -7,6 +7,11 @@ import cookieParser from "cookie-parser";
 import authMiddleware from "./middleware/auth.middleware.js";
 import errorHandler from "./middleware/error.middleware.js";
 
+let envPath = path.join(import.meta.dirname, "../.env");
+dotenv.config({
+    path: envPath
+});
+
 const server = express();
 
 server.use(express.json());
@@ -14,7 +19,7 @@ server.use(express.json());
 server.use(cookieParser());
 
 server.use((req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    res.setHeader("Access-Control-Allow-Origin", process.env.CLIENT_URL ?? "http://localhost:5173");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -37,10 +42,5 @@ server.use("/auth", authRouter);
 server.use("/expense", expenseRouter);
 
 server.use(errorHandler);
-
-let envPath = path.join(import.meta.dirname, "../.env");
-dotenv.config({
-    path: envPath
-})
 
 server.listen(process.env.PORT, () => console.log("server start"));
