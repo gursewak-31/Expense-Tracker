@@ -8,7 +8,7 @@ export async function insertUser(data: NewUser){
 
     if(db){
         let users = db.collection("users");
-        result = await users.insertOne(data);
+        result = await users.insertOne({...data, createdAt: new Date()});
     }
 
     return result ? result.insertedId : result;
@@ -65,7 +65,7 @@ export async function updateImage(image: string | undefined, userId: string){
             result = await users.updateOne({_id: UID}, {$unset: {profileImage: ""}});
     }
 
-    return result ? result.modifiedCount : result;
+    return result ? result.acknowledged : result;
 }
 
 export async function updateUser(data: {firstName: string, lastName?: string, email: string}, userId: string){
@@ -81,7 +81,7 @@ export async function updateUser(data: {firstName: string, lastName?: string, em
             result = await users.updateOne({_id: UID}, {$set: {firstName: data.firstName, email: data.email}, $unset: {lastName: ""}});
     }
 
-    return result ? result.modifiedCount : result;
+    return result ? result.acknowledged : result;
 }
 
 export async function updatePassword(newPassword: string, userId: string){
@@ -94,7 +94,7 @@ export async function updatePassword(newPassword: string, userId: string){
         result = await users.updateOne({_id: UID}, {$set: {password: newPassword}});
     }
 
-    return result ? result.modifiedCount : result;
+    return result ? result.acknowledged : result;
 }
 
 export async function deleteUser(userId: string){

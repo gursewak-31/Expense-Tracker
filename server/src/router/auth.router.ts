@@ -1,11 +1,14 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
+import { mkdir } from "fs/promises";
 import * as authController from "../controller/auth.controller.js";
 
 const router = express.Router();
 
 let uploadsPath = path.join(import.meta.dirname, "../../../uploads");
+await mkdir(uploadsPath, { recursive: true });
+
 let allowedFileTypes = ["image/jpeg", "image/png", "image/webp"];
 const uploads = multer({
     dest: uploadsPath,
