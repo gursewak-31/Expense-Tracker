@@ -15,13 +15,21 @@ if(!uri){
 
 const conn = new MongoClient(uri);
 
-export default async function connectDB(){
+export async function connectDB(){
     try{
         await conn.connect();
 
         const db = conn.db("Expense-Tracker-DB");
 
         return db;
+    }catch(err){
+        console.log(err);
+    }
+}
+
+export async function closeDB(){
+    try{
+        await conn.close();
     }catch(err){
         console.log(err);
     }

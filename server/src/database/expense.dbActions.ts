@@ -1,5 +1,5 @@
 import { ObjectId, type Collection, type Db } from "mongodb";
-import connectDB from "./dbConn.js";
+import { connectDB } from "./dbConn.js";
 import type { NewUser, NewExpense, ExpenseReqQuery } from "../types/types.js";
 import type { Sort } from "mongodb";
 

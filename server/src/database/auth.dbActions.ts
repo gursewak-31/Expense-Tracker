@@ -1,5 +1,5 @@
 import { ObjectId, type Collection, type Db } from "mongodb";
-import connectDB from "./dbConn.js";
+import { connectDB } from "./dbConn.js";
 import type { NewUser } from "../types/types.js";
 
 export async function insertUser(data: NewUser){
