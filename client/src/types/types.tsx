@@ -20,12 +20,18 @@ export type ChartData = {
 }
 export type AllowedPages = "/dashboard" | "/addExpense" | "/allExpenses" | "/accountSettings" | "/profile";
 
-export type expense = {
+export type StoredExpense = {
     _id: string,
     expense: string,
     amount: number,
     category: string,
-    createdAt?: Date
+    createdAt: Date
 }
-export type expenseCateogry = "all" | "shopping" | "food" | "entertainment" | "travel" | "other";
-export type entriesPP = "5" | "10" | "50" | "100" | "all";
+export type ExpenseCateogry = "all" | "shopping" | "food" | "entertainment" | "travel" | "other";
+export type EntriesPP = "5" | "10" | "50" | "100" | "all";
+
+export type NewExpense = {
+    expense: string,
+    amount: number,
+    category: string
+}

@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { NewExpense } from "../types/types";
 
 const req = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -27,6 +28,36 @@ export async function addExpense(expense: string, amount: number | "", category:
     }catch(err){
         if(axios.isAxiosError(err)){
             if(err.status == 401)
+                setTimeout(() => window.location.href = "/login", 3000);
+            return err.response?.data;
+        }
+        return {success: false, msg: "Somthing went wrong. please try again later."};
+    }
+}
+
+export async function updateExpense(data: NewExpense, id: string){
+    try{
+        let res = await req.post("/expense/update", {...data, id: id}, {headers: {"Content-Type": "application/json"}});
+
+        return res.data;
+    }catch(err){
+        if(axios.isAxiosError(err)){
+            if(err.status == 401) 
+                setTimeout(() => window.location.href = "/login", 3000);
+            return err.response?.data;
+        }
+        return {success: false, msg: "Somthing went wrong. please try again later."};
+    }
+}
+
+export async function deleteExpense(id: string){
+    try{
+        let res = await req.delete(`/expense/${id}`);
+
+        return res.data;
+    }catch(err){
+        if(axios.isAxiosError(err)){
+            if(err.status == 401) 
                 setTimeout(() => window.location.href = "/login", 3000);
             return err.response?.data;
         }

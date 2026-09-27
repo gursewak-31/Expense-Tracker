@@ -26,3 +26,23 @@ export async function getData(id: string){
 
     return result;
 }
+
+export async function updateExpense(data: {id: string, expense: string, amount: number, category: string}){
+    let result = await actions.updateExpense(data);
+
+    if(result){
+        return {statusCode: 200, msg: "Expense updated successfully."};
+    }
+
+    throw new Error("Failed to updated expense.");
+}
+
+export async function deleteExpense(id: string){
+    let result = await actions.deleteExpense(id);
+
+    if(result){
+        return {statusCode: 200, msg: "Expense deleted successfully."}
+    }
+
+    throw new Error("failed to delete expense.");
+}

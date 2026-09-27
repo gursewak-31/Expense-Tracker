@@ -13,4 +13,12 @@ router.get("/data", (req, res, next) => {
     expenseController.getData(req, res, next);
 });
 
+router.post("/update", (req, res, next) => {
+    expenseController.updateExpense(req, res, next);
+});
+
+router.delete("/:id", (req, res, next) => {
+    expenseController.deleteExpense(req, res, next);
+});
+
 export default router;

@@ -1,28 +1,46 @@
-import { useEffect, useState } from "react";
-import { getExpenses } from "../api/expenseApi";
-import type { expense, expenseCateogry, entriesPP } from "../types/types";
+import React, { useEffect, useState } from "react";
+import { getExpenses, deleteExpense, updateExpense } from "../api/expenseApi";
+import type { StoredExpense, ExpenseCateogry, EntriesPP, NewExpense } from "../types/types";
+import { FaXmark } from 'react-icons/fa6';
 
 export default function AllExpenses(){
-    let [data, setData] = useState<expense[] | null>(null);
+    let [data, setData] = useState<StoredExpense[] | null>(null);
     let [sortBy, setSortBy] = useState<"expense" | "amount" | "category" | "createdAt">("createdAt");
     let [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("ASC");
     let [search, setSearch] = useState("");
-    let [filter, setFiler] = useState<expenseCateogry>("all");
-    let [entriesPP, setEntriesPP] = useState<entriesPP>("5");
+    let [filter, setFiler] = useState<ExpenseCateogry>("all");
+    let [entriesPP, setEntriesPP] = useState<EntriesPP>("5");
     let [totalRecords, setTotalRecords] = useState(0);
     let [page, setPage] = useState(1);
+    let [updatingData, setUpdatingData] = useState<NewExpense>({expense: "", amount: 0, category: ""});
+    let [updatingId, setUpdatingId] = useState("");
+    let [isModalOpen, setIsModalOpen] = useState(false);
+    let [updateResponse, setUpdateResponse] = useState({success: false, msg: ""});
 
     async function getData(){
-        try{
-            let data = await getExpenses(sortBy, sortOrder, search, filter, entriesPP, page);
+        let data = await getExpenses(sortBy, sortOrder, search, filter, entriesPP, page);
 
-            if(data){
-                setTotalRecords(data.totalRecords);
-                setData(data.data);
-            }
-            
-        }catch(err){
-            console.log(err);
+        if(data){
+            setTotalRecords(data.totalRecords);
+            setData(data.data);
+        }
+    }
+
+    async function deleteData(id: string){
+        let res = await deleteExpense(id);
+
+        if(res.success){
+            getData();
+        }
+    }
+
+    async function updateData(){
+        let res = await updateExpense(updatingData, updatingId);
+
+        setUpdateResponse(res);
+
+        if(res.success){
+            getData();
         }
     }
     
@@ -39,6 +57,10 @@ export default function AllExpenses(){
         getData();
     }, [page]);
 
+    useEffect(() => {
+        if(updateResponse.msg) setTimeout(() => setUpdateResponse({success: false, msg: ""}), 3000);
+    }, [updateResponse])
+
     return(
         <>
             <div className="p-4 pt-16">
@@ -47,7 +69,7 @@ export default function AllExpenses(){
                     <div className="w-full p-2 mb-4 flex justify-between">
                         <div className="flex items-center gap-6">
                             <label htmlFor="CategorySort" className="text-white">Category: </label>
-                            <select id="CategorySort" className="text-white outline-0 focus:bg-slate-900 border border-slate-700 p-1 rounded-md" value={filter} onChange={(e) => setFiler(e.target.value as expenseCateogry)}>
+                            <select id="CategorySort" className="text-white outline-0 focus:bg-slate-900 border border-slate-700 p-1 rounded-md" value={filter} onChange={(e) => setFiler(e.target.value as ExpenseCateogry)}>
                                 <option value="all">All</option>
                                 <option value="shopping">Shopping</option>
                                 <option value="food">Food</option>
@@ -57,7 +79,7 @@ export default function AllExpenses(){
                             </select>
 
                             <label htmlFor="entries" className="text-white">Entries: </label>
-                            <select id="entries" className="text-white outline-0 focus:bg-slate-900 border border-slate-700 rounded-md px-2 py-1" value={entriesPP} onChange={(e) => setEntriesPP(e.target.value as entriesPP)}>
+                            <select id="entries" className="text-white outline-0 focus:bg-slate-900 border border-slate-700 rounded-md px-2 py-1" value={entriesPP} onChange={(e) => setEntriesPP(e.target.value as EntriesPP)}>
                                 <option value="5">5</option>
                                 <option value="10">10</option>
                                 <option value="50">50</option>
@@ -134,7 +156,14 @@ export default function AllExpenses(){
                         <tbody>
                             {data && data.length ? (
                                 data.map((item) => (
-                                    <CreateRow key = {item._id} detail = {item}></CreateRow>
+                                    <CreateRow 
+                                        key = {item._id} 
+                                        detail = {item} 
+                                        deleteData = {deleteData} 
+                                        setModalOpen = {setIsModalOpen} 
+                                        setUpdatingData = {setUpdatingData}
+                                        setUpdatingId = {setUpdatingId}
+                                    ></CreateRow>
                                 ))
                             ) : (
                                 <tr>
@@ -156,13 +185,20 @@ export default function AllExpenses(){
                         </div>
                     </div>
                 </div>
+                {isModalOpen && <UpdateModal data = {updatingData} setData = {setUpdatingData} setModalOpen = {setIsModalOpen} updateData = {updateData} response = {updateResponse} setResponse = {setUpdateResponse}/>}
             </div>
         </>
     )
 }
 
-
-function CreateRow({detail}: {detail: expense}){
+type CreateRowProps = {
+    detail: StoredExpense,
+    deleteData: (id: string) => void,
+    setModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    setUpdatingData: React.Dispatch<React.SetStateAction<NewExpense>>,
+    setUpdatingId: React.Dispatch<React.SetStateAction<string>>
+}
+function CreateRow({detail, deleteData, setModalOpen, setUpdatingData, setUpdatingId}: CreateRowProps){
 
     let date = null;
     if(detail.createdAt){
@@ -177,11 +213,107 @@ function CreateRow({detail}: {detail: expense}){
                 <td className="border border-slate-500 p-1 text-center">{detail.category}</td>
                 <td className="border border-slate-500 p-1 text-center">{date ?? "..."}</td>
                 <td className="border border-slate-500 p-1 text-center">
-                    <button className="px-1 text-blue-500 hover:text-blue-600 cursor-pointer">Edit</button>
+                    <button className="px-1 text-blue-500 hover:text-blue-600 cursor-pointer" onClick={() => {
+                        setModalOpen(true);
+                        setUpdatingData({expense: detail.expense, amount: detail.amount, category: detail.category});
+                        setUpdatingId(detail._id);
+                    }}>Edit</button>
                     | 
-                    <button className="px-1 text-red-500 hover:text-red-600 cursor-pointer">Delete</button>
+                    <button className="px-1 text-red-500 hover:text-red-600 cursor-pointer" onClick={() => deleteData(detail._id)}>Delete</button>
                 </td>
             </tr>
         </>
+    )
+}
+
+type UpdateModalProps = {
+    data: NewExpense,
+    setData: React.Dispatch<React.SetStateAction<NewExpense>>,
+    setModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    updateData: () => void,
+    response: {success: boolean, msg: string},
+    setResponse: React.Dispatch<React.SetStateAction<{success: boolean, msg: string}>>
+}
+function UpdateModal({data, setData, setModalOpen, updateData, response, setResponse}: UpdateModalProps){
+    let [invalidField, setInvalidField] = useState({expense: false, amount: false, category: false});
+
+    function submit(e: React.FormEvent<HTMLFormElement>){
+        e.preventDefault();
+        let isValidData = true;
+
+        if(data.expense == ""){
+            setInvalidField(prev => ({...prev, expense: true}));
+            isValidData = false;
+        }
+        if(data.amount == 0){
+            setInvalidField(prev => ({...prev, amount: true}));
+            isValidData = false;
+        }
+        if(data.category == ""){
+            setInvalidField(prev => ({...prev, category: true}));
+            isValidData = false;
+        }
+
+        if(isValidData) updateData();
+    }
+    
+    return(
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs">
+            <div className="bg-slate-900 border border-slate-700 rounded-xl max-w-md w-full p-6 shadow-2xl space-y-4">
+                <div className="text-end">
+                    <button className="cursor-pointer" onClick={() => {
+                        setModalOpen(false);
+                        setResponse({success: false, msg: ""});
+                    }}>
+                        <FaXmark/>
+                    </button>
+                </div>
+                <form className="flex flex-col gap-4" onSubmit={submit}>
+                    <div className="">
+                        <input type="text" className="w-full border border-slate-700 rounded-md px-1 py-2 text-sm outline-0 bg-slate-800" placeholder="*Expense" value={data.expense} onChange={(e) => {
+                            setData({...data, expense: e.target.value});
+                            setInvalidField({...invalidField, expense: false});
+                        }}/>
+                        {invalidField.expense && (
+                            <span className="text-xs text-red-700">* Please enter valid expense </span>
+                        )}
+                    </div>
+
+                    <div className="">
+                        <input type="number" className="w-full border border-slate-700 rounded-md px-1 py-2 text-sm outline-0 bg-slate-800" placeholder="*Amount" value={data.amount} onChange={(e) => {
+                            setData({...data, amount: Number(e.target.value)});
+                            setInvalidField({...invalidField, amount: false});
+                        }}/>
+                        {invalidField.amount && (
+                            <span className="text-xs text-red-700">* Please enter valid amount </span>
+                        )}
+                    </div>
+
+                    <div className="">
+                        <select className="w-full border border-slate-700 rounded-md px-1 py-2 text-sm outline-0 bg-slate-800"  value={data.category} onChange={(e) => {
+                            setData({...data, category: e.target.value});
+                            setInvalidField({...invalidField, category: false});
+                        }}>
+                            <option value="shopping">Shopping</option>
+                            <option value="food">Food</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="travel">Travel</option>
+                            <option value="other">Other</option>
+                        </select>
+                        {invalidField.category && (
+                            <span className="text-xs text-red-700">* Please select a category </span>
+                        )}
+                    </div>
+
+                    {response.msg && (
+                        <span className={`text-xs ps-1 ${response.success ? 'text-green-700' : 'text-red-700'}`}>* {response.msg}</span>
+                    )}
+
+                    <div className="text-center">
+                        <button className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors cursor-pointer">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     )
 }

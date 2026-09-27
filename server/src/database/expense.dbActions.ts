@@ -92,7 +92,7 @@ export async function getData(id: string){
         let dateFrom = new Date();
         dateFrom.setDate(dateFrom.getDate() - 9);
         dateFrom.setHours(0, 0, 0, 0); // set time to mid night to so it consider all day
-        result = expenses.aggregate([
+        result = await expenses.aggregate([
             {
                 $match: {
                     user_id: UID,
@@ -139,4 +139,35 @@ export async function getData(id: string){
     }
 
     return result;
+}
+
+export async function updateExpense(data: {id: string, expense: string, amount: number, category: string}){
+    let db = await connectDB();
+    let result = null;
+
+    if(db){
+        let ExpenseID = new ObjectId(data.id);
+        let expenses = db.collection("expenses");
+
+        result = await expenses.updateOne(
+            {_id: ExpenseID}, 
+            {$set: {expense: data.expense, amount: data.amount, category: data.category}}
+        );
+    }
+
+    return result ? result.acknowledged : result;
+}
+
+export async function deleteExpense(id: string){
+    let db = await connectDB();
+    let result = null;
+    
+    if(db){
+        let ExpenseID = new ObjectId(id);
+        let expenses = db.collection("expenses");
+        
+        result = await expenses.deleteOne({_id: ExpenseID});
+    }
+    
+    return result ? result.acknowledged : result;
 }
