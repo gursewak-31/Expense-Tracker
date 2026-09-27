@@ -29,8 +29,7 @@ Users can add, view, update, and delete expenses, making it easier to keep track
 
 * React
 * TypeScript
-* Vite
-* Bootstrap
+* Tailwind
 
 ### Backend
 
