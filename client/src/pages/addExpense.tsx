@@ -3,19 +3,36 @@ import { addExpense } from "../api/expenseApi";
 
 export default function AddExpense(){
     let [expense, setExpense] = useState("");
-    let [amount, setAmount] = useState<number | "">("");
+    let [amount, setAmount] = useState<number>(0);
     let [category, setCatagory] = useState("");
     let [response, setResponse] = useState({success: true, msg: ""});
+    let [invalidField, setInvalidField] = useState({expense: false, amount: false, category: false});
 
     async function submit(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
-        if(!expense || !amount || !category) return;
+        let isValid = true;
 
-        let res = await addExpense(expense, amount, category);
+        if(expense == ""){
+            setInvalidField(prev => ({...prev, expense: true}));
+            isValid = false;
+        }
+        if(isNaN(amount) || amount == 0){
+            setInvalidField(prev => ({...prev, amount: true}));
+            isValid = false;
+        }
+        if(category == ""){
+            setInvalidField(prev => ({...prev, category: true}));
+            isValid = false;
+        }
+
+        if(!isValid) return;
+
+        let data = {expense: expense, amount: amount, category: category};
+        let res = await addExpense(data);
 
         if(res.success){
             setExpense("");
-            setAmount("");
+            setAmount(0);
             setCatagory("");
         }
 
@@ -24,32 +41,49 @@ export default function AddExpense(){
 
     useEffect(() => {
         if(response.msg) setTimeout(() => setResponse({success: true, msg: ""}), 3000);
-    }, [response])
+    }, [response]);
 
     return(
         <>
             <div className="p-4 pt-16 flex-1 flex flex-col items-center">
                 <h2 className="mb-2 text-white">Add Expense</h2>
-                <div className="w-1/2 rounded border border-slate-700 bg-slate-900 p-4">
+                <div className="w-1/2 rounded-md border border-slate-700 bg-slate-900 p-4">
                     <form className="flex h-full flex-col" onSubmit={submit}>
                         <div className="w-full p-2">
-                            <input type="text" className="w-full border-b text-white outline-0 p-1" placeholder="Enter Expense" value={expense} onChange={(e) => setExpense(e.target.value)}/>
+                            <input type="text" className="w-full text-white outline-0 px-1 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm" placeholder="Enter Expense" value={expense} onChange={(e) => {
+                                setExpense(e.target.value);
+                                setInvalidField({...invalidField, expense: false});
+                            }}/>
+                            {invalidField.expense && (
+                                <span className="text-xs text-red-700">* Please enter valid expense</span>
+                            )}
                         </div>
 
                         <div className="w-full p-2">
-                            <input type="number" className="w-full border-b text-white outline-0 p-1" placeholder="Enter Amount" value={amount} onChange={(e) => setAmount(parseInt(e.target.value))}/>
+                            <input type="number" className="w-full text-white outline-0 px-1 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm" placeholder="Enter Amount" value={amount} onChange={(e) => {
+                                setAmount(parseInt(e.target.value));
+                                setInvalidField({...invalidField, amount: false});
+                            }}/>
+                            {invalidField.amount && (
+                                <span className="text-xs text-red-700">* Please enter valid amount</span>
+                            )}
                         </div>
 
                         <div className="w-full p-2">
-                            <label htmlFor="category" className="text-white">Category: </label>
-                            <select id="category" className="border-b text-white outline-0 focus:bg-gray-900" value={category} onChange={(e) => setCatagory(e.target.value)}>
-                                <option value="" selected disabled>--- Select ---</option>
+                            <select id="category" className="w-full text-white outline-0 px-1 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm" value={category} onChange={(e) => {
+                                setCatagory(e.target.value);
+                                setInvalidField({...invalidField, category: false});
+                            }}>
+                                <option value="" selected disabled>--- Category ---</option>
                                 <option value="shopping">Shopping</option>
                                 <option value="food">Food</option>
                                 <option value="entertainment">Entertainment</option>
                                 <option value="travel">Travel</option>
                                 <option value="other">Other</option>
                             </select>
+                            {invalidField.category && (
+                                <span className="text-xs text-red-700">* Please selete category</span>
+                            )}
                         </div>
 
                         {response.msg && (

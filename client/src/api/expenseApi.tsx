@@ -19,10 +19,9 @@ export async function getExpenses(sortBy: string, sortOrder: string, search: str
     }
 }
 
-export async function addExpense(expense: string, amount: number | "", category: string){
+export async function addExpense(data: NewExpense){
     try{
-        let reqData = {expense: expense, amount: amount, category: category};
-        let res = await req.post("/expense", reqData, {headers: {"Content-Type": "application/json"}});
+        let res = await req.post("/expense", data, {headers: {"Content-Type": "application/json"}});
 
         return res.data;
     }catch(err){
