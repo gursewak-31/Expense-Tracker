@@ -51,7 +51,7 @@ export default function Profile(){
     function validate(){
         let isValid = true;
 
-        if(!/^[a-zA-Z\s]+$/.test(firstName)){
+        if(!/^[a-zA-Z\s]+$/.test(firstName) || firstName.trim().length <= 0){
             setInvalidField(prev => ({...prev, firstName: true}));
             isValid = false;
         }
