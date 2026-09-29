@@ -7,7 +7,6 @@ import Dashboard from './pages/dashboard';
 import AddExpense from './pages/addExpense';
 import AllExpenses from "./pages/allExpense";
 import Profile from './pages/profile';
-import AccountSettings2 from './pages/accountSettings2';
 import AccountSettings from './pages/accountSettings';
 import ProtectedRoute from './components/protectedRoute';
 import UserProvider from './context/userContext';
@@ -28,7 +27,6 @@ function App() {
                 <Route path='/profile' element = {<Profile/>} />
                 <Route path='/addExpense' element = {<AddExpense/>}></Route>
                 <Route path='/allExpenses' element = {<AllExpenses/>}></Route>
-                <Route path='/AccountSettings2' element = {<AccountSettings2/>}></Route>
                 <Route path='/AccountSettings' element = {<AccountSettings/>}></Route>
               </Route>
             </Route>
