@@ -18,6 +18,12 @@ export type NewUser = {
     profileImage?: string
 }
 
+export type UpdateUser = {
+    firstName: string,
+    lastName?: string,
+    email: string,
+}
+
 export type LoginData = {
     email: string,
     password: string

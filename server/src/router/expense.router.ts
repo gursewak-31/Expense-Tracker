@@ -3,22 +3,14 @@ import * as expenseController from "../controller/expense.controller.js";
 
 const router = express.Router();
 
-router.post("/", (req, res, next) => {
-    expenseController.addExpense(req, res, next);
-});
+router.post("/", expenseController.addExpense);
 
 router.get("/", expenseController.getExpense);
 
-router.get("/data", (req, res, next) => {
-    expenseController.getData(req, res, next);
-});
+router.get("/data", expenseController.getData);
 
-router.post("/update", (req, res, next) => {
-    expenseController.updateExpense(req, res, next);
-});
+router.post("/update", expenseController.updateExpense);
 
-router.delete("/:id", (req, res, next) => {
-    expenseController.deleteExpense(req, res, next);
-});
+router.delete("/:id", expenseController.deleteExpense);
 
 export default router;

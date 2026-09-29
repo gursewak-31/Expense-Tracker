@@ -1,10 +1,10 @@
 import * as actions from "../database/auth.dbActions.js";
-import { validate, deleteImage } from "../utils/authUtils.js";
+import { validateSignup, validateLogin, validateUpdate, deleteImage } from "../utils/authUtils.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import path from "path";
-import type { NewUser, LoginData } from "../types/types.js";
+import type { NewUser, LoginData, UpdateUser } from "../types/types.js";
 
 let envPath = path.join(import.meta.dirname, "../../.env");
 dotenv.config({
@@ -14,7 +14,7 @@ dotenv.config({
 const jwtKey = process.env.SECRET_KEY;
 
 export async function signup(data: NewUser){
-    let isValid = validate(data);
+    let isValid = validateSignup(data);
     if(!isValid){
         await deleteImage(data.profileImage);
         return {statusCode: 422}
@@ -44,7 +44,7 @@ export async function signup(data: NewUser){
 }
 
 export async function login(data: LoginData){
-    let isValid = validate(data);
+    let isValid = validateLogin(data);
     if(!isValid){
         return {statusCode: 422}
     }
@@ -82,7 +82,12 @@ export async function updateProfileImage(image: string | undefined, oldImageName
     throw new Error("Failed to update image.");
 }
 
-export async function updateData(data: {firstName: string, lastName?: string, email: string}, userId: string){
+export async function updateData(data: UpdateUser, userId: string){
+    let isValid = validateUpdate(data);
+    if(!isValid){
+        return {statusCode: 422}
+    }
+
     let update = await actions.updateUser(data, userId);
     
     if(update){

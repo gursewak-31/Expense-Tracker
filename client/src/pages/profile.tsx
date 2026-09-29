@@ -51,7 +51,7 @@ export default function Profile(){
     function validate(){
         let isValid = true;
 
-        if(!firstName || !/^[a-zA-Z\s]*$/.test(firstName)){
+        if(!/^[a-zA-Z\s]+$/.test(firstName)){
             setInvalidField(prev => ({...prev, firstName: true}));
             isValid = false;
         }
@@ -59,7 +59,7 @@ export default function Profile(){
             setInvalidField(prev => ({...prev, lastName: true}));
             isValid = false;
         }
-        if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
             setInvalidField(prev => ({...prev, email: true}));
             isValid = false;
         }
@@ -107,7 +107,7 @@ export default function Profile(){
                         <div>
                             <h5 className="border-b text-white">Profile Information</h5>
 
-                            <span className={`text-sm ${response.success ? 'text-green-700' : 'text-green-700'}`}>{response.msg}</span>
+                            <span className={`text-sm ${response.success ? 'text-green-700' : 'text-red-700'}`}>{response.msg}</span>
 
                             <form onSubmit={userUpdate}>
                                 <div className="py-3">
@@ -133,6 +133,7 @@ export default function Profile(){
                                             setFirstName(user?.firstName);
                                             setLastName(user?.lastName);
                                             setEmail(user?.email);
+                                            setInvalidField({firstName: false, lastName: false, email: false})
                                         }}>Discard</button>
                                         <button className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-lg shadow-sm transition-colors cursor-pointer">Save</button>
                                     </div>

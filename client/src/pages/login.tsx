@@ -31,22 +31,22 @@ export default function Login(){
 
     function validate(){
         let isValid = true;
+
         if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
             setInvalidField(prev => ({...prev, email: "Please enter a valid email address."}));
             isValid = false;
         }
-
         if(!/^.{8,32}$/.test(password)){
             setInvalidField(prev => ({...prev, password: "Password must be at least 8 characters long."}));
+            isValid = false;
+        }
+        if(password.trim().length <= 0){
+            setInvalidField(prev => ({...prev, password: "Please Enter valid characters in password."}));
             isValid = false;
         }
 
         return isValid;
     }
-
-    useEffect(() => {
-        setTimeout(() => setInvalidField({email: "", password: ""}), 5000);
-    }, [invalidField])
 
     useEffect(() => {
         setTimeout(() => setResponse(""), 5000);
@@ -64,14 +64,20 @@ export default function Login(){
                 <form onSubmit={submit}>
                     <div className="flex flex-col gap-3 py-6 text-sm">
                         <div className="p-2">
-                            <input className="w-full border-b p-1 outline-0 transition-colors hover:placeholder:text-white" type="email" placeholder="*Email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                            <input className="w-full border-b p-1 outline-0 transition-colors hover:placeholder:text-white" type="email" placeholder="*Email" value={email} onChange={(e) => {
+                                setEmail(e.target.value);
+                                setInvalidField({...invalidField, email: ""});
+                            }}/>
                             {invalidField.email && (
                                 <span className="text-xs text-red-700">* {invalidField.email}</span>
                             )}
                         </div>
                         <div className="p-2">
                             <div className=" relative">
-                                <input type={isShowPass ? "text" : "password"} className="w-full border-b p-1 outline-0 transition-colors hover:placeholder:text-white" placeholder="*Password" value={password} onChange={(e) => setPassword(e.target.value)} maxLength={32}/>
+                                <input type={isShowPass ? "text" : "password"} className="w-full border-b p-1 outline-0 transition-colors hover:placeholder:text-white" placeholder="*Password" value={password} maxLength={32} onChange={(e) => {
+                                    setPassword(e.target.value);
+                                    setInvalidField({...invalidField, password: ""});
+                                }}/>
                                 <button className="cursor-pointer absolute right-1 bottom-1/5" type="button" onClick={() => setIsShowPass(!isShowPass)}>
                                     {isShowPass ? (
                                         <FaEye/>

@@ -18,17 +18,15 @@ export async function addExpense(req: Request, res: Response, next: NextFunction
     }
 }
 
-export const getExpense: RequestHandler<{}, {}, {}, ExpenseReqQuery> = (req, res, next) => {
-    (async () => {
-        try{
-            let data = req.query;
-            let result = await expenseService.getExpense(data, req.userId as string);
+export async function getExpense(req: Request<{}, {}, {}, ExpenseReqQuery>, res: Response, next: NextFunction){
+    try{
+        let data = req.query;
+        let result = await expenseService.getExpense(data, req.userId as string);
 
-            res.status(200).json({success: true, data: result.data, totalRecords: result.totalRecords});
-        }catch(err){
-            next(err);
-        }
-    })();
+        res.status(200).json({success: true, data: result.data, totalRecords: result.totalRecords});
+    }catch(err){
+        next(err);
+    }
 }
 
 export async function getData(req: Request, res: Response, next: NextFunction){

@@ -74,6 +74,11 @@ export async function updateData(req: Request, res: Response, next: NextFunction
     try{
         let result = await authService.updateData(req.body, req.userId as string);
 
+        if(result.statusCode == 422){
+            res.status(422).json({success: false, msg: "Please enter valid data !"});
+            return;
+        }
+
         res.status(200).json({success: true, msg: result.msg});
     }catch(err){
         next(err);
