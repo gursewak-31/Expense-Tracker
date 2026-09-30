@@ -1,6 +1,6 @@
 import { ObjectId, type Collection, type Db } from "mongodb";
 import { connectDB } from "./dbConn.js";
-import type { NewUser, NewExpense, ExpenseReqQuery } from "../types/types.js";
+import type { NewUser, NewExpense, ExpenseReqQuery, UpdateExpense } from "../types/types.js";
 import type { Sort } from "mongodb";
 
 export async function insertExpense(data: NewExpense){
@@ -141,17 +141,22 @@ export async function getData(id: string){
     return result;
 }
 
-export async function updateExpense(data: {id: string, expense: string, amount: number, category: string}){
+export async function updateExpense(data: UpdateExpense){
     let db = await connectDB();
     let result = null;
 
     if(db){
         let ExpenseID = new ObjectId(data.id);
+        let updateData = {
+            ...(data.expense !== undefined && {"expense": data.expense}),
+            ...(data.amount !== undefined && {"amount": data.amount}),
+            ...(data.category !== undefined && {"category": data.category})
+        }
         let expenses = db.collection("expenses");
 
         result = await expenses.updateOne(
             {_id: ExpenseID}, 
-            {$set: {expense: data.expense, amount: data.amount, category: data.category}}
+            {$set: updateData}
         );
     }
 

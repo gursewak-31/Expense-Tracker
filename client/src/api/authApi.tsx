@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { UpdateUser } from "../types/types";
 
 const req = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -55,7 +56,7 @@ export async function updateProfileImage(data: FormData){
     }
 }
 
-export async function updateData(data: {firstName: string, lastname?: string, email: string}){
+export async function updateData(data: UpdateUser){
     try{
         let res = await req.post("/auth/updateData", data);
 

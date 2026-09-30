@@ -9,6 +9,12 @@ export type User = {
     createdAt: Date
 }
 
+export type UpdateUser = {
+    firstName?: string,
+    lastName?: string,
+    email?: string
+}
+
 export type UserContext = {
     user: User | null,
     setUser: React.Dispatch<React.SetStateAction<User | null>>
@@ -34,4 +40,10 @@ export type NewExpense = {
     expense: string,
     amount: number,
     category: string
+}
+
+export type UpdateExpense = {
+    expense?: string,
+    amount?: number,
+    category?: string
 }

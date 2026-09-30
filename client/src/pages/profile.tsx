@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { updateProfileImage, updateData } from "../api/authApi";
 import useAuthUser from "../hooks/useAuthUser";
+import type { UpdateUser } from "../types/types";
 
 export default function Profile(){
     let { setUser } = useUser();
@@ -41,7 +42,13 @@ export default function Profile(){
         let isValid = validate();
         if(!isValid) return;
         
-        let data = {firstName: firstName, ...(lastName && {lastName}), email: email};
+        let data: UpdateUser = {
+            ...(firstName != user.firstName && {firstName}),
+            ...(lastName != user.lastName && {lastName}),
+            ...(email != user.email && {email})
+        };
+
+        if(Object.keys(data).length <= 0) return;
 
         let res = await updateData(data);
 

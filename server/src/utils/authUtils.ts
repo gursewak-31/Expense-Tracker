@@ -16,12 +16,16 @@ export function validateLogin(data: LoginData): boolean{
     return (isValidEmail(data.email) && isValidPassword(data.password));
 }
 
-export function validateUpdate(data: UpdateUser): boolean{
-    return (
-        isValidFirstName(data.firstName) &&
-        isValidLastName(data.lastName ?? "") &&
-        isValidEmail(data.email)
-    );
+export function validateUpdate(data: UpdateUser): boolean{ // only validate that fields which exist in data object and need update
+    let isValid = true;
+    if(data.firstName)
+        isValid = isValidFirstName(data.firstName);
+    if(data.lastName)
+        isValid = isValidLastName(data.lastName);
+    if(data.email)
+        isValid = isValidEmail(data.email);
+    
+    return isValid;
 }
 
 function isValidFirstName(firstName: string): boolean{

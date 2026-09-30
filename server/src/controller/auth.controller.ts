@@ -81,6 +81,7 @@ export async function updateData(req: Request, res: Response, next: NextFunction
 
         res.status(200).json({success: true, msg: result.msg});
     }catch(err){
+        console.log(err);
         next(err);
     }
 }

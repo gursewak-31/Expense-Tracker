@@ -1,8 +1,8 @@
-import type { NewExpense, StoredExpense, ExpenseReqQuery } from "../types/types.js";
+import type { NewExpense, StoredExpense, ExpenseReqQuery, UpdateExpense } from "../types/types.js";
 import * as actions from "../database/expense.dbActions.js";
 
 export async function addExpense(data: NewExpense){
-    if(data.expense == "" ||  !Number.isFinite(data.amount) || data.category == ""){
+    if(data.expense.trim() == "" ||  !Number.isFinite(data.amount) || data.category.trim() == ""){
         return {statusCode: 422};
     }
 
@@ -27,7 +27,13 @@ export async function getData(id: string){
     return result;
 }
 
-export async function updateExpense(data: {id: string, expense: string, amount: number, category: string}){
+export async function updateExpense(data: UpdateExpense){
+    if((data.expense !== undefined && data.expense.trim() == "") ||
+    (data.amount !== undefined && (!Number.isFinite(data.amount) || data.amount <= 0)) ||
+    (data.category !== undefined && data.category.trim() == "")){
+        return {statusCode: 422};
+    }
+
     let result = await actions.updateExpense(data);
 
     if(result){

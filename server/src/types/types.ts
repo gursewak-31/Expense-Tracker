@@ -19,9 +19,9 @@ export type NewUser = {
 }
 
 export type UpdateUser = {
-    firstName: string,
+    firstName?: string,
     lastName?: string,
-    email: string,
+    email?: string,
 }
 
 export type LoginData = {
@@ -52,6 +52,13 @@ export type ExpenseReqQuery = {
     filter: string,
     record: string,
     page: string
+}
+
+export type UpdateExpense = {
+    id: string,
+    expense?: string,
+    amount?: number,
+    category?: string
 }
 
 export type JwtUserPayload = {

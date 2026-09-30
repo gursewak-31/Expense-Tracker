@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getExpenses, deleteExpense, updateExpense } from "../api/expenseApi";
-import type { StoredExpense, ExpenseCateogry, EntriesPP, NewExpense } from "../types/types";
+import type { StoredExpense, ExpenseCateogry, EntriesPP, NewExpense, UpdateExpense } from "../types/types";
 import { FaXmark } from 'react-icons/fa6';
 
 export default function AllExpenses(){
@@ -34,8 +34,8 @@ export default function AllExpenses(){
         }
     }
 
-    async function updateData(){
-        let res = await updateExpense(updatingData, updatingId);
+    async function updateData(data: UpdateExpense){
+        let res = await updateExpense(data, updatingId);
 
         setUpdateResponse(res);
 
@@ -185,7 +185,7 @@ export default function AllExpenses(){
                         </div>
                     </div>
                 </div>
-                {isModalOpen && <UpdateModal data = {updatingData} setData = {setUpdatingData} setModalOpen = {setIsModalOpen} updateData = {updateData} response = {updateResponse} setResponse = {setUpdateResponse}/>}
+                {isModalOpen && <UpdateModal data = {updatingData} setModalOpen = {setIsModalOpen} updateData = {updateData} response = {updateResponse} setResponse = {setUpdateResponse}/>}
             </div>
         </>
     )
@@ -228,33 +228,45 @@ function CreateRow({detail, deleteData, setModalOpen, setUpdatingData, setUpdati
 
 type UpdateModalProps = {
     data: NewExpense,
-    setData: React.Dispatch<React.SetStateAction<NewExpense>>,
     setModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    updateData: () => void,
+    updateData: (data: {expense?: string, amount?: number, category?: string}) => void,
     response: {success: boolean, msg: string},
     setResponse: React.Dispatch<React.SetStateAction<{success: boolean, msg: string}>>
 }
-function UpdateModal({data, setData, setModalOpen, updateData, response, setResponse}: UpdateModalProps){
+function UpdateModal({data, setModalOpen, updateData, response, setResponse}: UpdateModalProps){
+    let [expense, setExpense] = useState(data.expense);
+    let [amount, setAmount] = useState(data.amount);
+    let [category, setCategory] = useState(data.category);
     let [invalidField, setInvalidField] = useState({expense: false, amount: false, category: false});
 
     function submit(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
         let isValidData = true;
 
-        if(data.expense == ""){
+        if(expense == ""){
             setInvalidField(prev => ({...prev, expense: true}));
             isValidData = false;
         }
-        if(data.amount == 0){
+        if(amount == 0 || isNaN(amount)){
             setInvalidField(prev => ({...prev, amount: true}));
             isValidData = false;
         }
-        if(data.category == ""){
+        if(category == ""){
             setInvalidField(prev => ({...prev, category: true}));
             isValidData = false;
         }
 
-        if(isValidData) updateData();
+        console.log(category);
+
+        let updatedData: UpdateExpense = {
+            ...(expense != data.expense && {expense}),
+            ...(amount != data.amount && {amount}),
+            ...(category != data.category && {category})
+        }
+
+        if(Object.keys(updatedData).length <= 0 || !isValidData) return;
+
+        updateData(updatedData);
     }
     
     return(
@@ -270,8 +282,8 @@ function UpdateModal({data, setData, setModalOpen, updateData, response, setResp
                 </div>
                 <form className="flex flex-col gap-4" onSubmit={submit}>
                     <div className="">
-                        <input type="text" className="w-full border border-slate-700 rounded-md px-1 py-2 text-sm outline-0 bg-slate-800" placeholder="*Expense" value={data.expense} onChange={(e) => {
-                            setData({...data, expense: e.target.value});
+                        <input type="text" className="w-full border border-slate-700 rounded-md px-1 py-2 text-sm outline-0 bg-slate-800" placeholder="*Expense" value={expense} onChange={(e) => {
+                            setExpense(e.target.value);
                             setInvalidField({...invalidField, expense: false});
                         }}/>
                         {invalidField.expense && (
@@ -280,8 +292,8 @@ function UpdateModal({data, setData, setModalOpen, updateData, response, setResp
                     </div>
 
                     <div className="">
-                        <input type="number" className="w-full border border-slate-700 rounded-md px-1 py-2 text-sm outline-0 bg-slate-800" placeholder="*Amount" value={data.amount} onChange={(e) => {
-                            setData({...data, amount: Number(e.target.value)});
+                        <input type="number" className="w-full border border-slate-700 rounded-md px-1 py-2 text-sm outline-0 bg-slate-800" placeholder="*Amount" value={amount} onChange={(e) => {
+                            setAmount(Number(e.target.value));
                             setInvalidField({...invalidField, amount: false});
                         }}/>
                         {invalidField.amount && (
@@ -290,8 +302,8 @@ function UpdateModal({data, setData, setModalOpen, updateData, response, setResp
                     </div>
 
                     <div className="">
-                        <select className="w-full border border-slate-700 rounded-md px-1 py-2 text-sm outline-0 bg-slate-800"  value={data.category} onChange={(e) => {
-                            setData({...data, category: e.target.value});
+                        <select className="w-full border border-slate-700 rounded-md px-1 py-2 text-sm outline-0 bg-slate-800"  value={category} onChange={(e) => {
+                            setCategory(e.target.value);
                             setInvalidField({...invalidField, category: false});
                         }}>
                             <option value="shopping">Shopping</option>

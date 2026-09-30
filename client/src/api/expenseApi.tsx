@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { NewExpense } from "../types/types";
+import type { NewExpense, UpdateExpense } from "../types/types";
 
 const req = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -34,7 +34,7 @@ export async function addExpense(data: NewExpense){
     }
 }
 
-export async function updateExpense(data: NewExpense, id: string){
+export async function updateExpense(data: UpdateExpense, id: string){
     try{
         let res = await req.post("/expense/update", {...data, id: id}, {headers: {"Content-Type": "application/json"}});
 

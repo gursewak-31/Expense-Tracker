@@ -43,6 +43,11 @@ export async function updateExpense(req: Request, res: Response, next: NextFunct
     try{
         let result = await expenseService.updateExpense(req.body);
 
+        if(result.statusCode == 422){
+            res.status(422).json({success: false, msg: "Invalid date. Please fill valid data !"});
+            return;
+        }
+
         res.status(200).json({success: true, msg: result.msg});
     }catch(err){
         next(err);

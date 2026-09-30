@@ -1,6 +1,6 @@
 import { ObjectId, type Collection, type Db } from "mongodb";
 import { connectDB } from "./dbConn.js";
-import type { NewUser } from "../types/types.js";
+import type { NewUser, UpdateUser } from "../types/types.js";
 
 export async function insertUser(data: NewUser){
     let db = await connectDB();
@@ -68,17 +68,19 @@ export async function updateImage(image: string | undefined, userId: string){
     return result ? result.acknowledged : result;
 }
 
-export async function updateUser(data: {firstName: string, lastName?: string, email: string}, userId: string){
+export async function updateUser(data: UpdateUser, userId: string){
     let db = await connectDB();
     let result = null;
 
     if(db){
         let UID = new ObjectId(userId);
+        let updateData: UpdateUser = {
+            ...(data.firstName !== undefined && {"firstName": data.firstName}),
+            ...(data.lastName !== undefined && {"lastName": data.lastName}),
+            ...(data.email !== undefined && {"email": data.email})
+        };
         let users = db.collection("users");
-        if(data.lastName)
-            result = await users.updateOne({_id: UID}, {$set: {firstName: data.firstName, lastName: data.lastName, email: data.email}});
-        else
-            result = await users.updateOne({_id: UID}, {$set: {firstName: data.firstName, email: data.email}, $unset: {lastName: ""}});
+        result = await users.updateOne({_id: UID}, {$set: updateData});
     }
 
     return result ? result.acknowledged : result;
