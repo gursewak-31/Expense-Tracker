@@ -41,6 +41,7 @@ export default function AllExpenses(){
 
         if(res.success){
             getData();
+            setUpdatingData({...updatingData, ...data});
         }
     }
     
@@ -255,8 +256,6 @@ function UpdateModal({data, setModalOpen, updateData, response, setResponse}: Up
             setInvalidField(prev => ({...prev, category: true}));
             isValidData = false;
         }
-
-        console.log(category);
 
         let updatedData: UpdateExpense = {
             ...(expense != data.expense && {expense}),

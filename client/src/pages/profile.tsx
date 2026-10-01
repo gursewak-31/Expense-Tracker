@@ -52,6 +52,10 @@ export default function Profile(){
 
         let res = await updateData(data);
 
+        if(res.success){
+            setUser({...user, ...data});
+        }
+
         setResponse(res);
     }
 

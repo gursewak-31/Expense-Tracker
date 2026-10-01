@@ -78,6 +78,10 @@ export async function updateData(req: Request, res: Response, next: NextFunction
             res.status(422).json({success: false, msg: "Please enter valid data !"});
             return;
         }
+        if(result.statusCode == 409){
+            res.status(409).json({success: false, msg: "Email address already exist !"});
+            return;
+        }
 
         res.status(200).json({success: true, msg: result.msg});
     }catch(err){

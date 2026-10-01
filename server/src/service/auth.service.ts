@@ -88,6 +88,13 @@ export async function updateData(data: UpdateUser, userId: string){
         return {statusCode: 422}
     }
 
+    if(data.email){
+        let check = await actions.checkUser(data.email);
+        if(check){
+            return {statusCode: 409};
+        }
+    }
+
     let update = await actions.updateUser(data, userId);
     
     if(update){
