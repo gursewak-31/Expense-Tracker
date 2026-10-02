@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import path from "path";
 import type { NewUser, LoginData, UpdateUser } from "../types/types.js";
+import AppError from "../errors/appError.js";
 
 let envPath = path.join(import.meta.dirname, "../../.env");
 dotenv.config({
@@ -17,13 +18,13 @@ export async function signup(data: NewUser){
     let isValid = validateSignup(data);
     if(!isValid){
         await deleteImage(data.profileImage);
-        return {statusCode: 422}
+        throw new AppError(422, "Please enter valid data !");
     }
 
     let check = await actions.checkUser(data.email);
     if(check){
         await deleteImage(data.profileImage);
-        return {statusCode: 409};
+        throw new AppError(409, "Email address already exist !");
     }
 
     let hashedPass = await bcrypt.hash(data.password, 12);
@@ -37,16 +38,16 @@ export async function signup(data: NewUser){
 
     if(userId){
         let token = jwt.sign({userId: userId}, jwtKey, {expiresIn: "1d"});
-        return {statusCode: 200, new_id: userId, token: token};
+        return token; // return user token on successfully signup
     }
 
-    throw new Error("failed to signup");
+    throw new Error("Failed to signup");
 }
 
 export async function login(data: LoginData){
     let isValid = validateLogin(data);
     if(!isValid){
-        return {statusCode: 422}
+        throw new AppError(422, "Please enter valid data !");
     }
 
     let user = await actions.checkUser(data.email);
@@ -59,10 +60,10 @@ export async function login(data: LoginData){
     
     if(user && isPassValid){
         let token = jwt.sign({userId: user._id}, jwtKey, {expiresIn: "1d"});
-        return {statusCode: 200, user: user, token: token};
+        return token; // return token when user login successully
     }
 
-    return {statusCode: 404};
+    throw new AppError(404, "Invalid email or password.");
 }
 
 export async function getUser(id: string){
@@ -76,7 +77,7 @@ export async function updateProfileImage(image: string | undefined, oldImageName
 
     if(update){
         await deleteImage(oldImageName);
-        return {statusCode: 200, msg: "Image updated successfully.", image: image}
+        return image ?? ""; // return new uploaded image or empty if user request to delete image
     }
 
     throw new Error("Failed to update image.");
@@ -85,23 +86,21 @@ export async function updateProfileImage(image: string | undefined, oldImageName
 export async function updateData(data: UpdateUser, userId: string){
     let isValid = validateUpdate(data);
     if(!isValid){
-        return {statusCode: 422}
+        throw new AppError(422, "Please enter valid data !");
     }
 
     if(data.email){
         let check = await actions.checkUser(data.email);
         if(check){
-            return {statusCode: 409};
+            throw new AppError(409, "Email address already exist !");
         }
     }
 
     let update = await actions.updateUser(data, userId);
     
-    if(update){
-        return {statusCode: 200, msg: "Data update successfully"}
-    }
-    
-    throw new Error("Falies to update user data.")
+    if(update) return;
+
+    throw new Error("Failed to update user data");
 }
 
 export async function updatePassword(data: {currentPassword: string, newPassword: string}, userId: string){
@@ -109,18 +108,21 @@ export async function updatePassword(data: {currentPassword: string, newPassword
 
     let isValid = await bcrypt.compare(data.currentPassword, check?.password ?? "");
     if(!isValid){
-        return {statusCode: 401, msg: "Incorrect current password. Please enter correct password."};
+        throw new AppError(401, "Incorrect current password. Please enter correct password.");
+    }
+
+    let isSame = await bcrypt.compare(data.newPassword, check?.password ?? "");
+    if(isSame){
+        throw new AppError(401, "New password must be different from your current password.");
     }
 
     let password = await bcrypt.hash(data.newPassword, 12);
 
     let update = await actions.updatePassword(password, userId);
 
-    if(update){
-        return {statusCode: 200, msg: "Password updated sucessfully."};
-    }
+    if(update) return;
 
-    throw new Error("Falies to update user password.");
+    throw new Error("Failed to update user password.");
 }
 
 export async function deleteUser(userId: string){
@@ -132,9 +134,7 @@ export async function deleteUser(userId: string){
 
     let remove = await actions.deleteUser(userId);
 
-    if(remove){
-        return {statusCode: 200, msg: "Account deactivate successfully."};
-    }
+    if(remove) return;
 
     throw new Error("Failed to deactivate account.");
 }
