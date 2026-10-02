@@ -44,19 +44,14 @@ export default function AllExpenses(){
             setUpdatingData({...updatingData, ...data});
         }
     }
-    
-    useEffect(() => {
-        getData();
-    }, []);
-
-    useEffect(() => {
-        setPage(1);
-        if(page == 1) getData(); // if page is already 1 then setPage() not change any state so no re-render occur
-    }, [sortBy, sortOrder, filter, search, entriesPP])
 
     useEffect(() => {
         getData();
-    }, [page]);
+    }, [sortBy, sortOrder, filter, search, entriesPP, page])
+
+    useEffect(() => {
+        setPage(1); // when filter change set page to 1
+    }, [sortBy, sortOrder, filter, search, entriesPP]);
 
     useEffect(() => {
         if(updateResponse.msg) setTimeout(() => setUpdateResponse({success: false, msg: ""}), 3000);
@@ -145,11 +140,7 @@ export default function AllExpenses(){
                                 </th>
                                 <th className="border border-slate-500 p-1">
                                     <div className="flex justify-center cursor-pointer">
-                                        Action 
-                                        {/* <div className="p-0 inline-flex flex-col">
-                                            <button className="text-gray-400 p-0 leading-none h-3">▴</button>
-                                            <button className="text-gray-400 p-0 leading-none h-3">▾</button>
-                                        </div> */}
+                                        Action
                                     </div>
                                 </th>
                             </tr>
@@ -178,11 +169,11 @@ export default function AllExpenses(){
                             <span className="text-xs">{Number(entriesPP) * (page - 1) + 1} to {totalRecords / Number(entriesPP) >= page ? Number(entriesPP) * page : totalRecords} (out of {totalRecords} records)</span>
                         </div>
                         <div>
-                            <button className="border border-white px-4 text-white cursor-pointer disabled:text-gray-500 disabled:cursor-auto" disabled = {page == 1} onClick={() => setPage(page - 1)}>≪</button>
+                            <button className="border border-white px-4 text-white cursor-pointer disabled:text-gray-500 disabled:cursor-auto" disabled = {page == 1} onClick={() => setPage(1)}>≪</button>
                             <button className="border border-white px-4 text-white cursor-pointer disabled:text-gray-500 disabled:cursor-auto" disabled = {page == 1} onClick={() => setPage(page - 1)}>≺</button>
                             <span className="px-2">{page}</span>
                             <button className="border border-white px-4 text-white cursor-pointer disabled:text-gray-500 disabled:cursor-auto" disabled = {totalRecords / Number(entriesPP) <= page || entriesPP == "all"} onClick={() => setPage(page + 1)}>≻</button>
-                            <button className="border border-white px-4 text-white cursor-pointer disabled:text-gray-500 disabled:cursor-auto" disabled = {Math.ceil(totalRecords / Number(entriesPP)) <= page || entriesPP == "all"} onClick={() => setPage(page + 1)}>≫</button>
+                            <button className="border border-white px-4 text-white cursor-pointer disabled:text-gray-500 disabled:cursor-auto" disabled = {Math.ceil(totalRecords / Number(entriesPP)) <= page || entriesPP == "all"} onClick={() => setPage(Math.ceil(totalRecords / Number(entriesPP)))}>≫</button>
                         </div>
                     </div>
                 </div>

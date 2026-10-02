@@ -25,7 +25,7 @@ export default function Profile(){
 
         let res = await updateProfileImage(data);
 
-        if(res.success && user){
+        if(res.success){
             setUser({...user, profileImage: res.image ? res.image : ""});
         }
         if(res.success)
