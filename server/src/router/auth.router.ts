@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import { mkdir } from "fs/promises";
 import * as authController from "../controller/auth.controller.js";
+import AppError from "../errors/appError.js";
 
 const router = express.Router();
 
@@ -21,43 +22,31 @@ const uploads = multer({
         if(allowedFileTypes.includes(file.mimetype)){
             cb(null, true);
         }else{
-            cb(new Error("Wrong file type."));
+            cb(new AppError(422, "Wrong file type."));
         }
     }
 });
 
-router.post("/login", (req, res, next) => {
-    authController.login(req, res, next);
-});
+router.post("/login", authController.login);
 
 router.post("/signup", uploads.single("profileImage"), (req, res, next) => {
     req.body = {...req.body, profileImage: req.file?.filename};
     authController.signup(req, res, next);
 });
 
-router.get("/user", (req, res, next) => {
-    authController.user(req, res, next);
-});
+router.get("/user", authController.user);
 
 router.post("/updateProfileImage", uploads.single("profileImage"), (req, res, next) => {
     req.body = {...req.body, profileImage: req.file?.filename};
     authController.updateProfileImage(req, res, next);
 });
 
-router.post("/updateData", (req, res, next) => {
-    authController.updateData(req, res, next);
-});
+router.post("/updateData", authController.updateData);
 
-router.post("/updatePassword", (req, res, next) => {
-    authController.updatePassword(req, res, next);
-});
+router.post("/updatePassword", authController.updatePassword);
 
-router.get("/logout", (req, res, next) => {
-    authController.logout(req, res, next);
-});
+router.get("/logout", authController.logout);
 
-router.get("/deactivate", (req, res, next) => {
-    authController.deleteUser(req, res, next); 
-});
+router.get("/deactivate", authController.deleteUser);
 
 export default router;
