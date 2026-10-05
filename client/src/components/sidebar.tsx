@@ -41,7 +41,7 @@ export default function SideBar({ isOpen, setIsOpen }: SideBarProps){
             <div className={`h-full lg:w-1/5 md:w-1/3 w-2/3 flex-col absolute z-10 md:relative gap-4 bg-slate-900 border-r border-gray-800 p-2 ${isOpen ? 'flex' : 'hidden'} md:flex `}>
                 <div className="w-full p-2 text-center relative">
                     <h3 className="text-1xl text-white">Expense Tracker</h3>
-                    <button className="absolute right-2 top-3" onClick={() => {
+                    <button className="md:hidden absolute right-2 top-3" onClick={() => {
                         setIsOpen(false);
                         setIsMenuOpen(false);
                     }}>
