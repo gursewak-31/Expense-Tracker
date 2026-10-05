@@ -47,7 +47,7 @@ export default function AddExpense(){
         <>
             <div className="p-4 pt-16 flex-1 flex flex-col items-center">
                 <h2 className="mb-2 text-white">Add Expense</h2>
-                <div className="w-1/2 rounded-md border border-slate-700 bg-slate-900 p-4">
+                <div className="md:w-1/2 w-full rounded-md border border-slate-700 bg-slate-900 p-4">
                     <form className="flex h-full flex-col" onSubmit={submit}>
                         <div className="w-full p-2">
                             <input type="text" className="w-full text-white outline-0 px-1 py-2 bg-slate-800 border border-slate-700 rounded-md text-sm" placeholder="Enter Expense" value={expense} onChange={(e) => {

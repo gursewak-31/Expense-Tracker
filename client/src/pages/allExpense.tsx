@@ -62,7 +62,7 @@ export default function AllExpenses(){
             <div className="p-4 pt-16">
                 <h2 className="mb-2 text-white">All Expenses</h2>
                 <div className="w-full rounded border border-slate-700 bg-slate-900 p-4">
-                    <div className="w-full p-2 mb-4 flex justify-between">
+                    <div className="w-full p-2 mb-4 flex justify-between gap-6">
                         <div className="flex items-center gap-6">
                             <label htmlFor="CategorySort" className="text-white">Category: </label>
                             <select id="CategorySort" className="text-white outline-0 focus:bg-slate-900 border border-slate-700 p-1 rounded-md" value={filter} onChange={(e) => setFiler(e.target.value as ExpenseCateogry)}>

@@ -96,17 +96,17 @@ export default function Profile(){
 
     return(
         <div className="p-4 pt-16 flex justify-center">
-            <div className="h-full w-200 bg-slate-900 rounded p-6">
+            <div className="h-full w-full md:w-200 bg-slate-900 rounded p-6">
                 <div className="">
                     <h2 className="text-xl font-semibold text-white">Profile</h2>
                     <p className="text-slate-400 text-sm">Manage your profile information and account security preference.</p>
                 </div>
 
-                <div className="mt-5 flex gap-5 py-2">
-                    <div className="w-1/3 rounded bg-slate-950 text-center p-4">
+                <div className="mt-5 flex flex-col md:flex-row gap-5 py-2">
+                    <div className="w-full md:w-1/3 rounded bg-slate-950 text-center p-4">
                         <div className="relative inline-block">
                             <div className="h-30 w-30 overflow-hidden rounded-full">
-                                <img src={user?.profileImage ? `http://localhost:5174/files/${user.profileImage}` : "../../assets/images/default-user.jpg"} className="object-cover w-full h-full"/>
+                                <img src={user?.profileImage ? `${import.meta.env.VITE_API_URL}/files/${user.profileImage}` : "../../assets/images/default-user.jpg"} className="object-cover w-full h-full"/>
                             </div>
                             <button className="absolute right-0 bottom-0 h-5 w-5 hover:text-white cursor-pointer" onClick={() => setIsModalOpen(true)}><FaEdit/></button>
                         </div>
@@ -136,7 +136,7 @@ export default function Profile(){
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between py-3">
+                                <div className="flex flex-col-reverse gap-2 md:flex-row items-center justify-between py-3">
                                     <span className="text-xs text-gray-500">Joined On: {new Date(user?.createdAt ?? "").toDateString()}</span>
                                     <div className="flex gap-5">
                                         <button className="cursor-pointer rounded border border-red-700 px-5 py-1 text-red-700 hover:bg-red-700 hover:text-white text-sm transition-colors" onClick={(e) => {

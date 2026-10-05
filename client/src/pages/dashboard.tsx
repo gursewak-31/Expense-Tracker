@@ -44,13 +44,13 @@ export default function Dashboard(){
                         </span>
                     </div>
                 </div>
-                <div className="px-6 py-8 mt-5 flex gap-4 bg-slate-900 rounded-2xl">
-                    <div className="w-1/3 text-sm text-center">
+                <div className="md:px-6 py-8 mt-5 flex flex-col md:flex-row gap-4 bg-slate-900 rounded-2xl">
+                    <div className="md:w-1/3 text-sm text-center">
                         <ExpenseCategoryChart categoryExpense = {categoryExpense} />
                         <span className = "text-xs">Expense breakdown by category(in %)</span>
                     </div>
 
-                    <div className="flex-1 text-xs text-center">
+                    <div className="md:flex-1 text-xs text-center">
                         <DayWiseDataChart dayWiseExpense = {dayWiseExpense} />
                         <span className = "">Daily spending over the last 10 days</span>
                     </div>
