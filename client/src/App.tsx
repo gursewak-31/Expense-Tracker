@@ -11,6 +11,7 @@ import AccountSettings from './pages/accountSettings';
 import ProtectedRoute from './components/protectedRoute';
 import UserProvider from './context/userContext';
 import Layout from './components/Layout';
+import NotFound from './pages/notFound';
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
                 <Route path='/AccountSettings' element = {<AccountSettings/>}></Route>
               </Route>
             </Route>
+            <Route path='*' element = {<NotFound/>}/>
           </Routes>
       </UserProvider>
     </>
