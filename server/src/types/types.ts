@@ -1,16 +1,15 @@
 import type { ObjectId } from "mongodb"
 
-export type StoredUser = {
+export interface StoredUser{
     _id: ObjectId,
     firstName: string,
     lastName?: string,
     email: string,
-    password: string,
     createdAt: Date,
     profileImage?: string
 }
 
-export type NewUser = {
+export interface NewUser{
     firstName: string,
     lastName?: string,
     email: string,
@@ -18,34 +17,36 @@ export type NewUser = {
     profileImage?: string
 }
 
-export type UpdateUser = {
+export interface UpdateUser{
     firstName?: string,
     lastName?: string,
     email?: string,
 }
 
-export type LoginData = {
+export interface LoginData{
     email: string,
     password: string
 }
 
-export type NewExpense = {
+export interface NewExpense{
     expense: string,
     amount: number,
     category: string,
     user_id: string
 }
 
-export type StoredExpense = {
+export interface StoredExpense{
     id: ObjectId,
     user_id: string,
     expense: string,
     amount: number,
-    category: string,
+    category: ExpenseCategory,
     createdAt: Date
 }
 
-export type ExpenseReqQuery = {
+export type ExpenseCategory = "shopping" | "food" | "entertainment" | "travel" | "other";
+
+export interface ExpenseReqQuery{
     sort: string, 
     order: string,
     search: string, 
@@ -54,13 +55,13 @@ export type ExpenseReqQuery = {
     page: string
 }
 
-export type UpdateExpense = {
+export interface UpdateExpense{
     id: string,
     expense?: string,
     amount?: number,
-    category?: string
+    category?: ExpenseCategory
 }
 
-export type JwtUserPayload = {
+export interface JwtUserPayload{
     userId: string
 }

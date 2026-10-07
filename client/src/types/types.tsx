@@ -1,6 +1,6 @@
 import type React from "react"
 
-export type User = {
+export interface User {
     _id: string,
     firstName: string,
     lastName?: string,
@@ -9,24 +9,24 @@ export type User = {
     createdAt: Date
 }
 
-export type UpdateUser = {
+export interface UpdateUser {
     firstName?: string,
     lastName?: string,
     email?: string
 }
 
-export type UserContext = {
+export interface UserContext {
     user: User | null,
     setUser: React.Dispatch<React.SetStateAction<User | null>>
 }
 
-export type ChartData = {
+export interface ChartData {
     _id: "String",
     total: number
 }
 export type AllowedPages = "/dashboard" | "/addExpense" | "/allExpenses" | "/accountSettings" | "/profile";
 
-export type StoredExpense = {
+export interface StoredExpense {
     _id: string,
     expense: string,
     amount: number,
@@ -36,13 +36,13 @@ export type StoredExpense = {
 export type ExpenseCateogry = "all" | "shopping" | "food" | "entertainment" | "travel" | "other";
 export type EntriesPP = "5" | "10" | "50" | "100" | "all";
 
-export type NewExpense = {
+export interface NewExpense {
     expense: string,
     amount: number,
     category: string
 }
 
-export type UpdateExpense = {
+export interface UpdateExpense {
     expense?: string,
     amount?: number,
     category?: string

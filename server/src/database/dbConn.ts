@@ -23,7 +23,7 @@ export async function connectDB(){
 
         return db;
     }catch(err){
-        console.log(err);
+        throw new Error("Database connection failed.");
     }
 }
 
@@ -31,6 +31,6 @@ export async function closeDB(){
     try{
         await conn.close();
     }catch(err){
-        console.log(err);
+        throw new Error("Failed to close database connection.");
     }
 }
